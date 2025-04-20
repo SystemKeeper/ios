@@ -19,32 +19,43 @@ env:
   PROJECT: Nextcloud.xcodeproj
   DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.2
   SCHEME: Nextcloud
-  SERVER_BRANCH: stable30
+  SERVER_BRANCH: master
   PHP_VERSION: 8.3
 
 jobs:
   build:
     name: Build
     runs-on: macos-15
-    if: github.event.pull_request.draft == false
 
     steps:
-    - uses: actions/checkout@v4
+      # Workaround for eliminating iOS 17 simulators stalling issue
+      # Runs deamon which kills CPU intensive tasks which affects simulator performance
+      # See https://github.com/actions/runner-images/issues/11509#issuecomment-2703308482
+    - name: Install and run yeetd
+      run: |
+        wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+        sudo installer -pkg yeetd-normal.pkg -target /
+        defaults write dev.biscuit.yeetd killapsd true
+        yeetd & 
+
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        persist-credentials: false
 
     - name: Download GoogleService-Info.plist
-      run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+      run: wget 'https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist' -O GoogleService-Info.plist
 
     - name: Run Xcode Build
       run: |
         set -o pipefail && \
         xcodebuild build-for-testing \
-        -scheme "${{ env.SCHEME }}" \
-        -destination "${{ env.DESTINATION }}" \
-        -derivedDataPath "DerivedData" \
+        -scheme '${{ env.SCHEME }}' \
+        -destination '${{ env.DESTINATION }}' \
+        -derivedDataPath 'DerivedData' \
         | xcbeautify --quieter
 
     - name: Upload Build Products
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: Nextcloud for iOS
         path: DerivedData/Build/Products
@@ -55,15 +66,23 @@ jobs:
     runs-on: macos-15
     needs: [build]
 
-    # Temporarily, project has no effective tests except UI tests which are unfeasible on virtualized GitHub runners (see #3291)
-    # Previously: github.event.pull_request.draft == false
-    if: false
-
     steps:
-    - uses: actions/checkout@v4
+      # Workaround for eliminating iOS 17 simulators stalling issue
+      # Runs deamon which kills CPU intensive tasks which affects simulator performance
+      # See https://github.com/actions/runner-images/issues/11509#issuecomment-2703308482
+    - name: Install and run yeetd
+      run: |
+        wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+        sudo installer -pkg yeetd-normal.pkg -target /
+        defaults write dev.biscuit.yeetd killapsd true
+        yeetd & 
+
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        persist-credentials: false
 
     - name: Prepare PHP ${{ env.PHP_VERSION }}
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.33.0
       with:
         php-version: ${{ env.PHP_VERSION }}
         # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
@@ -73,16 +92,18 @@ jobs:
         ini-values: apc.enable_cli=on, disable_functions=
 
     - name: Checkout Nextcloud Server
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+        persist-credentials: false
         submodules: true
         repository: nextcloud/server
         path: server
         ref: ${{ env.SERVER_BRANCH }}
 
     - name: Checkout Download Limits App
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+        persist-credentials: false
         repository: nextcloud/files_downloadlimit
         path: server/apps/files_downloadlimit
         ref: ${{ env.SERVER_BRANCH }}
@@ -94,8 +115,8 @@ jobs:
         ./server/occ config:system:set hashing_default_password --value=true --type=boolean
         ./server/occ config:system:set auth.bruteforce.protection.enabled --value false --type bool
         ./server/occ config:system:set ratelimit.protection.enabled --value false --type bool
-        ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-        ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
+        ./server/occ config:system:set memcache.local --value='\\OC\\Memcache\\APCu'
+        ./server/occ config:system:set memcache.distributed --value='\\OC\\Memcache\\APCu'
         ./server/occ app:enable files_downloadlimit
         ./server/occ background:cron
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
@@ -106,36 +127,22 @@ jobs:
         name: Nextcloud for iOS
 
     - name: Assert Nextcloud Server Status
-      run: curl -s --retry 5 --retry-delay 60 --retry-all-errors http://localhost:8080/status.php || true
-
-    - name: Boot iOS Simulator
-      run: |
-        xcrun simctl boot "iPhone 16"
-        xcrun simctl bootstatus "iPhone 16" || echo "Simulator booted"
-
-    - name: Check if Safari is installed
-      run: |
-        if xcrun simctl listapps booted | grep -q com.apple.mobilesafari; then
-          echo "Safari is installed in the simulator."
-        else
-          echo "Safari is NOT installed in the simulator."
-          exit 1
-        fi
+      run: curl -s --retry 5 --retry-delay 5 --retry-all-errors http://localhost:8080/status.php || true
 
     - name: Run Xcode Test
       run: |
         set -o pipefail && \
         xcodebuild test-without-building \
-        -xctestrun $(find . -type f -name "*.xctestrun") \
-        -destination "${{ env.DESTINATION }}" \
-        -derivedDataPath "DerivedData" \
+        -xctestrun $(find . -type f -name '*.xctestrun') \
+        -destination '${{ env.DESTINATION }}' \
+        -derivedDataPath 'DerivedData' \
         -test-iterations 3 \
         -retry-tests-on-failure \
-        -resultBundlePath "TestResult.xcresult"
+        -resultBundlePath 'TestResult.xcresult'
 
     - name: Upload Xcode Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       if: ${{ !cancelled() }}
       with:
         name: TestResult.xcresult
-        path: "TestResult.xcresult"
+        path: 'TestResult.xcresult'
