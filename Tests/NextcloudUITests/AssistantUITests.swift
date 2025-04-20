@@ -20,6 +20,8 @@ final class AssistantUITests: BaseUIXCTestCase {
         try await super.setUp()
         continueAfterFailure = false
 
+        throw XCTSkip("No assistant for me")
+
         // Handle alerts presented by the system.
         addUIInterruptionMonitor(withDescription: "Allow Notifications", for: "Allow")
         addUIInterruptionMonitor(withDescription: "Save Password", for: "Not Now")
@@ -93,8 +95,6 @@ final class AssistantUITests: BaseUIXCTestCase {
     // MARK: - Tests
 
     func testCreateAssistantTask() async throws {
-        throw XCTSkip("No assistant for me")
-
         goToAssistant()
 
         createTask(input: taskInputCreated)
@@ -108,8 +108,6 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testRetryAssistantTask() async throws {
-        throw XCTSkip("No assistant for me")
-        
         goToAssistant()
 
         createTask(input: taskInputRetried)
@@ -126,8 +124,6 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testEditAssistantTask() async throws {
-        throw XCTSkip("No assistant for me")
-
         goToAssistant()
 
         createTask(input: taskInputToEdit)
@@ -143,8 +139,6 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testDeleteAssistantTask() async throws {
-        throw XCTSkip("No assistant for me")
-
         goToAssistant()
 
         createTask(input: taskInputDeleted)

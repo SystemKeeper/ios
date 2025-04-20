@@ -75,7 +75,7 @@ class BaseUIXCTestCase: XCTestCase {
         cell.awaitOrFail()
 
         // FIXME: ...
-        app.buttons["Favourites"].tap()
+        app.buttons["Favorites"].tap()
         app.buttons["Files"].tap()
 
         /*
