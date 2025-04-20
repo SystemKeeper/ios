@@ -29,7 +29,7 @@ class NCAccount: NSObject {
     let database = NCManageDatabase.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    func createAccount(viewController: UIViewController,
+    func createAccount(viewController: UIViewController?,
                        urlBase: String,
                        user: String,
                        password: String,
@@ -64,7 +64,7 @@ class NCAccount: NSObject {
                 }
                 if let controller {
                     controller.account = account
-                    viewController.dismiss(animated: true)
+                    viewController?.dismiss(animated: true)
                 } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                     controller.account = account
                     controller.modalPresentationStyle = .fullScreen
@@ -85,7 +85,7 @@ class NCAccount: NSObject {
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                viewController.present(alertController, animated: true)
+                viewController?.present(alertController, animated: true)
             }
         }
     }

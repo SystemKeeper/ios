@@ -58,92 +58,13 @@ class BaseUIXCTestCase: XCTestCase {
         try await Task.sleep(for: .seconds(TestConstants.controlExistenceTimeout))
     }
 
-    ///
-    /// Automation of the sign-in, if required.
-    ///
-    ///
-    func logIn() async throws {
-        guard app.buttons["login"].exists else {
-            return
-        }
+    @discardableResult
+    func waitForReady(object: XCUIElement, timeout: Double = TestConstants.controlExistenceTimeout) -> XCUIElement {
+        let enabledPredicate = NSPredicate(format: "exists == true AND enabled == true AND hittable == true")
+        expectation(for: enabledPredicate, evaluatedWith: object, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
 
-        app.buttons["login"].tap()
-
-        let serverAddressTextField = app.textFields["serverAddress"].firstMatch
-        guard serverAddressTextField.await() else { return }
-
-        try await aSmallMoment()
-
-        serverAddressTextField.tap()
-        serverAddressTextField.typeText(TestConstants.server)
-
-        app.buttons["submitServerAddress"].tap()
-
-        try await aSmallMoment()
-
-        let webView = app.webViews.firstMatch
-
-        guard webView.await() else {
-            throw UITestError.waitForExistence(webView)
-        }
-
-//        try await aSmallMoment()
-
-        let loginButton = webView.buttons["Log in"]
-
-//        try await aSmallMoment()
-
-        if loginButton.await() {
-            loginButton.tap()
-        }
-
-//        try await aSmallMoment()
-
-        let usernameTextField = webView.textFields.firstMatch
-
-        if usernameTextField.await() {
-
-            try await aSmallMoment()
-
-            guard usernameTextField.await() else { return }
-            usernameTextField.tap()
-
-            try await aSmallMoment()
-
-            usernameTextField.typeText(TestConstants.username)
-
-            try await aSmallMoment()
-
-            let passwordSecureTextField = webView.secureTextFields.firstMatch
-
-            try await aSmallMoment()
-
-            passwordSecureTextField.tap()
-
-
-            try await aSmallMoment()
-
-            passwordSecureTextField.typeText(TestConstants.password)
-
-            try await aSmallMoment()
-
-            webView.buttons.firstMatch.tap()
-        }
-
-        try await aSmallMoment()
-
-        let grantButton = webView.buttons["Grant access"]
-
-        guard grantButton.await() else {
-            throw UITestError.waitForExistence(grantButton)
-        }
-
-        grantButton.tap()
-        grantButton.awaitInexistence()
-
-        app.buttons["accountSwitcher"].await()
-
-        try await aSmallMoment()
+        return object
     }
 
     ///
@@ -151,15 +72,17 @@ class BaseUIXCTestCase: XCTestCase {
     ///
     func pullToRefresh(file: StaticString = #file, line: UInt = #line) {
         let cell = app.collectionViews.firstMatch.staticTexts.firstMatch
+        cell.awaitOrFail()
 
-        guard cell.exists else {
-            XCTFail("Apparently no collection view cell is visible!", file: file, line: line)
-            return
-        }
+        // FIXME: ...
+        app.buttons["Favourites"].tap()
+        app.buttons["Files"].tap()
 
+        /*
         let start = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 0))
         let finish = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 20))
 
         start.press(forDuration: 0.2, thenDragTo: finish)
+         */
     }
 }

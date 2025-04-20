@@ -20,10 +20,10 @@ final class AutoUploadUITests: BaseUIXCTestCase {
 
         // Launch the app.
         app = XCUIApplication()
-        app.launchArguments = ["UI_TESTING"]
+        app.launchArguments = ["UI_TESTING", "UI_TESTING_AUTO_LOGIN"]
         app.launch()
 
-        try await logIn()
+        app.buttons["accountSwitcher"].await(timeout: TestConstants.controlExistenceTimeoutLong)
 
         // Set up test backend communication.
         backend = UITestBackend()

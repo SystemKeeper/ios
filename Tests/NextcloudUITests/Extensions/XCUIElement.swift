@@ -21,11 +21,7 @@ extension XCUIElement {
     ///
     @discardableResult
     func await(timeout: Double = TestConstants.controlExistenceTimeout) -> Bool {
-        guard waitForExistence(timeout: timeout) else {
-            return false
-        }
-
-        return true
+        return waitForExistence(timeout: timeout)
     }
 
     ///
@@ -72,12 +68,7 @@ extension XCUIElement {
     ///     - file: File of the call point.
     ///     - line: Source code line of the call point within `file`.
     ///
-    func awaitOrFail(timeout: Double = TestConstants.controlExistenceTimeout, file: StaticString = #file, line: UInt = #line) {
-        guard waitForExistence(timeout: timeout) else {
-            XCTFail("Expected element did not exist after \(timeout) seconds: \(self.description)", file: file, line: line)
-            return
-        }
-
-        return
+    func awaitOrFail(timeout: Double = TestConstants.controlExistenceTimeout) {
+        XCTAssert(waitForExistence(timeout: timeout))
     }
 }

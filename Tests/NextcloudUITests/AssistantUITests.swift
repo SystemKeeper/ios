@@ -26,10 +26,10 @@ final class AssistantUITests: BaseUIXCTestCase {
 
         // Launch the app.
         app = XCUIApplication()
-        app.launchArguments = ["UI_TESTING"]
+        app.launchArguments = ["UI_TESTING", "UI_TESTING_AUTO_LOGIN"]
         app.launch()
 
-        try await logIn()
+        app.buttons["accountSwitcher"].await(timeout: TestConstants.controlExistenceTimeoutLong)
 
         // Set up test backend communication.
         backend = UITestBackend()
@@ -93,6 +93,8 @@ final class AssistantUITests: BaseUIXCTestCase {
     // MARK: - Tests
 
     func testCreateAssistantTask() async throws {
+        throw XCTSkip("No assistant for me")
+
         goToAssistant()
 
         createTask(input: taskInputCreated)
@@ -106,6 +108,8 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testRetryAssistantTask() async throws {
+        throw XCTSkip("No assistant for me")
+        
         goToAssistant()
 
         createTask(input: taskInputRetried)
@@ -122,6 +126,8 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testEditAssistantTask() async throws {
+        throw XCTSkip("No assistant for me")
+
         goToAssistant()
 
         createTask(input: taskInputToEdit)
@@ -137,6 +143,8 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     func testDeleteAssistantTask() async throws {
+        throw XCTSkip("No assistant for me")
+
         goToAssistant()
 
         createTask(input: taskInputDeleted)

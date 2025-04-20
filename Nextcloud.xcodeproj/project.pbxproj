@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F8335C42DB56F0700D23254 /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8335C32DB56F0700D23254 /* LoginUITests.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -1214,6 +1215,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F8335C32DB56F0700D23254 /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -2171,6 +2173,7 @@
 				AA3C85E92D36BBDE00F74F12 /* UITestBackend */,
 				AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */,
 				F3374A932D674454002A38F9 /* AssistantUITests.swift */,
+				1F8335C32DB56F0700D23254 /* LoginUITests.swift */,
 				F33D303D2D8B129600531D64 /* AutoUploadUITests.swift */,
 				AA74AA962D3172CE00BE3458 /* UITestError.swift */,
 			);
@@ -4167,6 +4170,7 @@
 				AA74AA972D3172D100BE3458 /* UITestError.swift in Sources */,
 				AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */,
 				AA8E03DC2D2FBAC200E7E89C /* DownloadLimitUITests.swift in Sources */,
+				1F8335C42DB56F0700D23254 /* LoginUITests.swift in Sources */,
 				AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */,
 				AA3C85EE2D36BCCE00F74F12 /* SharesResponse.swift in Sources */,
 				AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */,

@@ -46,11 +46,9 @@ class NCLoginProvider: UIViewController {
            let webView {
             HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
 
-            WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-                WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records, completionHandler: {
-                    self.loadWebPage(webView: webView, url: url)
-                })
-            }
+            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: .distantPast, completionHandler: {
+                self.loadWebPage(webView: webView, url: url)
+            })
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
             NCContentPresenter().showError(error: error, priority: .max)

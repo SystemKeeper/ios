@@ -29,10 +29,10 @@ final class DownloadLimitUITests: BaseUIXCTestCase {
 
         // Launch the app.
         app = XCUIApplication()
-        app.launchArguments = ["UI_TESTING"]
+        app.launchArguments = ["UI_TESTING", "UI_TESTING_AUTO_LOGIN"]
         app.launch()
 
-        try await logIn()
+        app.buttons["accountSwitcher"].await(timeout: TestConstants.controlExistenceTimeoutLong)
 
         // Set up test backend communication.
         backend = UITestBackend()
@@ -48,6 +48,11 @@ final class DownloadLimitUITests: BaseUIXCTestCase {
         // This cannot be implemented at the time of writing.
         // There is no way to disable and enable server apps via web API.
         // The Xcode UI test process cannot access Docker.
+
+
+        // See: POST /ocs/v2.php/cloud/apps/{app}
+        // and DELETE /ocs/v2.php/cloud/apps/{app}
+
         throw XCTSkip("Not implemented yet!")
     }
 
@@ -57,10 +62,7 @@ final class DownloadLimitUITests: BaseUIXCTestCase {
         // Tap share button.
 
         let shareButton = app.buttons["Cell/\(testFileName)/shareButton"]
-
-        guard shareButton.exists else {
-            throw UITestError.waitForExistence(shareButton)
-        }
+        waitForReady(object: shareButton)
 
         shareButton.tap()
 

@@ -35,9 +35,6 @@ import SwiftUI
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     var taskAutoUploadDate: Date = Date()
-    var isUiTestingEnabled: Bool {
-        return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
-    }
     var notificationSettings: UNNotificationSettings?
     var pushKitToken: String?
 
@@ -48,8 +45,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let database = NCManageDatabase.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if isUiTestingEnabled {
+        if ProcessInfo.processInfo.arguments.contains("UI_TESTING") {
             NCAccount().deleteAllAccounts()
+
+            if ProcessInfo.processInfo.arguments.contains("UI_TESTING_AUTO_LOGIN") {
+                // TODO: Get from TestConstants or arg or ...
+                let server = "http://localhost:8080"
+                let username = "admin"
+                let password = "admin"
+
+                NextcloudKit.shared.getAppPassword(url: server, user: username, password: password) { token, _, error in
+                    guard let token, error == .success else {
+                        fatalError("Unable to auto login")
+                    }
+
+                    NCAccount().createAccount(viewController: nil, urlBase: server, user: username, password: password, controller: nil)
+                }
+            }
         }
 
         let utilityFileSystem = NCUtilityFileSystem()
